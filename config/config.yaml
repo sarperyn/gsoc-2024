@@ -1,0 +1,18 @@
+data:
+  raw_path: data/raw
+  processed_path: data/processed
+
+model:
+  type: random_forest
+  hyperparameters:
+    n_estimators: 100
+    max_depth: 10
+
+training:
+  batch_size: 32
+  epochs: 100
+
+evaluation:
+  metrics: [accuracy, precision, recall]
+
+
