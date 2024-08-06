@@ -106,3 +106,28 @@ def visualize_tensor(tensor):
     plt.show()
 
     
+def visualize_predictions(images, masks, outputs, save_path, epoch, batch_idx):
+
+
+    images = images.cpu().numpy()
+    masks = masks.cpu().numpy()
+    outputs = torch.sigmoid(outputs).cpu().numpy() 
+    
+
+    images = images[:4]
+    masks = masks[:4]
+    outputs = outputs[:4]
+
+    fig, axs = plt.subplots(3, 4, figsize=(12, 9))
+    
+    for i in range(4):
+        axs[0, i].imshow(images[i][0], cmap='gray')
+        axs[0, i].axis('off')
+        axs[1, i].imshow(masks[i][0], cmap='gray')  
+        axs[1, i].axis('off')
+        axs[2, i].imshow(outputs[i][0] > 0.5, cmap='gray')
+        axs[2, i].axis('off')
+    
+    plt.suptitle(f'Batch {batch_idx} Predictions')
+    plt.savefig(os.path.join(save_path,f'fig_{epoch}_{batch_idx}.jpg'),format='jpg',bbox_inches='tight', pad_inches=0, dpi=100)
+    plt.show()

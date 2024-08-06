@@ -80,7 +80,7 @@ class BrainDataset(Dataset):
         elif 'sagittal' in file_name.lower():
             return 'sagittal'
         else:
-            return file_name  # debug check: return the file name if the plane type is unknown
+            return file_name  
 
 
     def filter_data(self, images, masks, labels, planes, file_names, tumor_type='all', plane_type='all'):
@@ -140,7 +140,6 @@ class BrainDataset(Dataset):
         #                                                              self.planes, 
         #                                                              file_names)
         
-
     def __len__(self):
         return len(self.images_path)
     
