@@ -65,17 +65,23 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
             loss.backward()
             optimizer.step()
             
+            # dice_score = dice_coefficient(masks, outputs)
+            # iou_score = iou_coefficient(masks, outputs)
+            
             train_loss += loss.item() * images.size(0)
 
-
-        torch.save(model, os.path.join(PLOT_DIRECTORY,args.exp_id,'model',f'model_{args.exp_id.split('/')[-1]}.pt'))    
+        # Assuming `model` is your PyTorch model and `args.exp_id` is your experiment ID
+        if epoch % 5 == 0:
+            save_path = os.path.join(PLOT_DIRECTORY, args.exp_id, 'model', f'model_{epoch}.pt')
+            torch.save(model.state_dict(), save_path)
+        #torch.save(model, os.path.join(PLOT_DIRECTORY,args.exp_id,'model',f'model_{args.exp_id.split('/')[-1]}.pt'))    
         train_loss = train_loss / len(train_loader.dataset)
         train_loss_history.append(train_loss)
         
         model.eval()
         val_loss = 0.0
-        dice_coefficients = 0.0
-        iou_coefficients  = 0.0 
+        # dice_coefficients = 0.0
+        # iou_coefficients  = 0.0 
         with torch.no_grad():
             for batch_idx, batch in enumerate(val_loader):
 
@@ -92,23 +98,23 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
                                         epoch=epoch, 
                                         batch_idx=batch_idx)
                     
-                dice_score = dice_coefficient(masks, outputs)
-                iou_score = iou_coefficient(masks, outputs)
+                # dice_score = dice_coefficient(masks, outputs)
+                # iou_score = iou_coefficient(masks, outputs)
 
-                dice_coefficients += dice_score
-                iou_coefficients  += iou_score
+                # dice_coefficients += dice_score
+        #         # iou_coefficients  += iou_score
 
 
-        dice_coefficients = dice_coefficients / len(val_loader.dataset)
-        dice_coef_history.append(dice_coefficients)
-        iou_coefficients = iou_coefficients / len(val_loader.dataset)
-        iou_score_history.append(iou_coefficients)
+        # dice_coefficients = dice_coefficients / len(val_loader.dataset)
+        # dice_coef_history.append(dice_coefficients)
+        # iou_coefficients = iou_coefficients / len(val_loader.dataset)
+        # iou_score_history.append(iou_coefficients)
 
         val_loss = val_loss / len(val_loader.dataset)
         val_loss_history.append(val_loss)
 
-        print(f"Dice Coefficient for {epoch}: {dice_coefficients}")
-        print(f"IoU Coefficient for {epoch}: {iou_coefficients}")
+        # print(f"Dice Coefficient for {epoch}: {dice_coefficients}")
+        # print(f"IoU Coefficient for {epoch}: {iou_coefficients}")
         print(f'Epoch {epoch+1}/{args.epoch}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
 
     plt.figure()
@@ -121,23 +127,23 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
     plt.show()
     plt.close()
 
-    plt.figure()
-    plt.plot(dice_coef_history, label='Dice Coeff')
-    plt.xlabel('Epoch')
-    plt.ylabel('Coefficient')
-    plt.legend()
-    plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'dice_coefficitent.jpg'))
-    plt.show()
-    plt.close()
+    # plt.figure()
+    # plt.plot(dice_coef_history, label='Dice Coeff')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Coefficient')
+    # plt.legend()
+    # plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'dice_coefficitent.jpg'))
+    # plt.show()
+    # plt.close()
 
-    plt.figure()
-    plt.plot(iou_score_history, label='IOU score')
-    plt.xlabel('Epoch')
-    plt.ylabel('Score')
-    plt.legend()
-    plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'iou_score.jpg'))
-    plt.show()
-    plt.close()
+    # plt.figure()
+    # plt.plot(iou_score_history, label='IOU score')
+    # plt.xlabel('Epoch')
+    # plt.ylabel('Score')
+    # plt.legend()
+    # plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'iou_score.jpg'))
+    # plt.show()
+    # plt.close()
     print("Training completed.")
 
 train_model(model=model, 
