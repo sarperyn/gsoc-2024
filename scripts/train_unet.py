@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 
 from src.dataloader.dataloaders import MadisonDatasetLabeled
 from src.models.unet import BaseUNet
-from src.utils.viz_utils import plot_results, visualize_predictions
+from src.utils.viz_utils import visualize_predictions
 from src.utils.args_utils import train_arg_parser
 from src.utils.variable_utils import PLOT_DIRECTORY, SEGMENTATION_DATA
 from src.evaluation.segmentation_metrics import *
@@ -26,10 +26,12 @@ args = train_arg_parser()
 
 device = args.device
 dataset = MadisonDatasetLabeled(SEGMENTATION_DATA, augment=True)
-train_indices, val_indices = train_test_split(np.arange(len(dataset)), test_size=0.05, random_state=42)
+train_indices, val_indices = train_test_split(np.arange(len(dataset)), test_size=args.test_size, random_state=42)
 train_dataset = Subset(dataset, train_indices)
 val_dataset = Subset(dataset, val_indices)
 
+print(f"LENGTH TRAIN:{len(train_dataset)}")
+print(f"LENGTH VAL:{len(val_dataset)}")
 val_dataset.dataset.augment = False
 
 train_loader = DataLoader(train_dataset, batch_size=args.bs, shuffle=True)
@@ -48,6 +50,7 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
 
     train_loss_history = []
     val_loss_history   = []
+    val_images = []
     dice_coef_history  = []
     iou_score_history  = []
 
@@ -55,7 +58,7 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
         model.train()
         train_loss = 0.0
         for batch_idx, batch in enumerate(tqdm(train_loader, desc=f"Epoch {epoch + 1}/{args.epoch}")):
-            images, masks = batch
+            images, masks, paths = batch
             images, masks = images.to(device), masks.to(device)
             
             optimizer.zero_grad()
@@ -70,11 +73,10 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
             
             train_loss += loss.item() * images.size(0)
 
-        # Assuming `model` is your PyTorch model and `args.exp_id` is your experiment ID
-        if epoch % 5 == 0:
-            save_path = os.path.join(PLOT_DIRECTORY, args.exp_id, 'model', f'model_{epoch}.pt')
-            torch.save(model.state_dict(), save_path)
-        #torch.save(model, os.path.join(PLOT_DIRECTORY,args.exp_id,'model',f'model_{args.exp_id.split('/')[-1]}.pt'))    
+        
+        save_path = os.path.join(PLOT_DIRECTORY, args.exp_id, 'model', f'model_{epoch}.pt')
+        torch.save(model.state_dict(), save_path)
+
         train_loss = train_loss / len(train_loader.dataset)
         train_loss_history.append(train_loss)
         
@@ -85,14 +87,18 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
         with torch.no_grad():
             for batch_idx, batch in enumerate(val_loader):
 
-                images, masks = batch
+                images, masks, paths = batch
                 images, masks = images.to(device), masks.to(device)
     
                 outputs = model(images)
                 loss = criterion(outputs, masks)
                 val_loss += loss.item() * images.size(0)
 
-                if batch_idx % 5 == 0:
+                if epoch == 0:
+                    for path in paths:
+                        val_images.append(path)
+
+                if batch_idx % 500 == 0:
                     visualize_predictions(images, masks, outputs, 
                                         save_path=os.path.join(PLOT_DIRECTORY,args.exp_id), 
                                         epoch=epoch, 
@@ -126,6 +132,10 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
     plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'train_loss_curves.jpg'))
     plt.show()
     plt.close()
+
+    with open(os.path.join(PLOT_DIRECTORY, args.exp_id, 'all_image_paths.txt'), 'w') as f:
+        for path in val_images:
+            f.writelines(path)
 
     # plt.figure()
     # plt.plot(dice_coef_history, label='Dice Coeff')

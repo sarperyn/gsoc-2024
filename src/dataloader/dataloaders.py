@@ -84,7 +84,7 @@ class MadisonDatasetLabeled(Dataset):
             torch.manual_seed(seed)
             mask = self.augmentation_transforms(mask)
 
-        return img, mask
+        return img, mask, self.image_paths[index]
 
 if __name__ == '__main__':
 

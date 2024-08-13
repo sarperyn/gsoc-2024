@@ -11,6 +11,7 @@ def train_arg_parser():
     parser.add_argument('--lr', type=float, default='3e-3')
     parser.add_argument('--bs', type=int, default=30)
     parser.add_argument('--epoch', type=int, default=500)
+    parser.add_argument('--test_size', type=float, default=0.05, help="If test_size is 0.05 then train_size is 0.95")
     args = parser.parse_args()
     return args
 
