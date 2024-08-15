@@ -1,22 +1,12 @@
 import numpy as np
 
-def dice_coefficient(y_true, y_pred, smooth=1e-6):
+def dice_coefficient(pred, target, threshold=0.5):
 
-    y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
-    
-    intersection = np.sum(y_true * y_pred)
-    dice = (2. * intersection + smooth) / (np.sum(y_true) + np.sum(y_pred) + smooth)
-    
-    return dice
+    pred = pred.detach().cpu().numpy()
+    target = target.detach().cpu().numpy()
 
-def iou_coefficient(y_true, y_pred, smooth=1e-6):
-
-    y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
+    pred = (pred > threshold).astype(np.uint8).flatten()
+    target = (target > threshold).astype(np.uint8).flatten()
     
-    intersection = np.sum(y_true * y_pred)
-    union = np.sum(y_true) + np.sum(y_pred) - intersection
-    iou = (intersection + smooth) / (union + smooth)
-    
-    return iou
+    intersection = np.sum(pred * target)
+    return (2. * intersection) / (np.sum(pred) + np.sum(target) + 1e-6)

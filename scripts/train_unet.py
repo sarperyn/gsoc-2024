@@ -16,22 +16,26 @@ from sklearn.model_selection import train_test_split
 
 from src.dataloader.dataloaders import MadisonDatasetLabeled
 from src.models.unet import BaseUNet
-from src.utils.viz_utils import visualize_predictions
+from src.utils.viz_utils import visualize_predictions, plot_metric
 from src.utils.args_utils import train_arg_parser
 from src.utils.variable_utils import PLOT_DIRECTORY, SEGMENTATION_DATA
-from src.evaluation.segmentation_metrics import *
+from src.evaluation.segmentation_metrics import dice_coefficient
 
 
 args = train_arg_parser()
 
 device = args.device
 dataset = MadisonDatasetLabeled(SEGMENTATION_DATA, augment=True)
+#val_dataset   = MadisonDatasetLabeled(VALIDATION_DIR, augment=False)
+
 train_indices, val_indices = train_test_split(np.arange(len(dataset)), test_size=args.test_size, random_state=42)
 train_dataset = Subset(dataset, train_indices)
 val_dataset = Subset(dataset, val_indices)
 
-print(f"LENGTH TRAIN:{len(train_dataset)}")
-print(f"LENGTH VAL:{len(val_dataset)}")
+# print(f"LENGTH TRAIN:{len(train_dataset)}")
+# print(f"LENGTH VAL:{len(val_dataset)}")
+
+
 val_dataset.dataset.augment = False
 
 train_loader = DataLoader(train_dataset, batch_size=args.bs, shuffle=True)
@@ -68,7 +72,7 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
             loss.backward()
             optimizer.step()
             
-            # dice_score = dice_coefficient(masks, outputs)
+            dice_score = dice_coefficient(masks, outputs)
             # iou_score = iou_coefficient(masks, outputs)
             
             train_loss += loss.item() * images.size(0)
@@ -82,7 +86,7 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
         
         model.eval()
         val_loss = 0.0
-        # dice_coefficients = 0.0
+        dice_coefficients = 0.0
         # iou_coefficients  = 0.0 
         with torch.no_grad():
             for batch_idx, batch in enumerate(val_loader):
@@ -104,25 +108,25 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
                                         epoch=epoch, 
                                         batch_idx=batch_idx)
                     
-                # dice_score = dice_coefficient(masks, outputs)
+                dice_score = dice_coefficient(masks, outputs)
                 # iou_score = iou_coefficient(masks, outputs)
 
-                # dice_coefficients += dice_score
-        #         # iou_coefficients  += iou_score
+                dice_coefficients += dice_score
+                # iou_coefficients  += iou_score
 
 
-        # dice_coefficients = dice_coefficients / len(val_loader.dataset)
-        # dice_coef_history.append(dice_coefficients)
+        dice_coefficients = dice_coefficients / len(val_loader.dataset)
+        dice_coef_history.append(dice_coefficients)
         # iou_coefficients = iou_coefficients / len(val_loader.dataset)
         # iou_score_history.append(iou_coefficients)
 
         val_loss = val_loss / len(val_loader.dataset)
         val_loss_history.append(val_loss)
 
-        # print(f"Dice Coefficient for {epoch}: {dice_coefficients}")
+        print(f"Dice Coefficient for {epoch}: {dice_coefficients}")
         # print(f"IoU Coefficient for {epoch}: {iou_coefficients}")
         print(f'Epoch {epoch+1}/{args.epoch}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}')
-
+    
     plt.figure()
     plt.plot(train_loss_history, label='Train Loss')
     plt.plot(val_loss_history, label='Val Loss')
@@ -133,27 +137,16 @@ def train_model(model, train_loader, val_loader, optimizer, criterion, device, a
     plt.show()
     plt.close()
 
+    plot_metric(x=dice_coef_history, 
+                label="dice coeff",
+                plot_dir=PLOT_DIRECTORY,
+                args=args,
+                metric='dice_coeff')
+
     with open(os.path.join(PLOT_DIRECTORY, args.exp_id, 'all_image_paths.txt'), 'w') as f:
         for path in val_images:
             f.writelines(path)
 
-    # plt.figure()
-    # plt.plot(dice_coef_history, label='Dice Coeff')
-    # plt.xlabel('Epoch')
-    # plt.ylabel('Coefficient')
-    # plt.legend()
-    # plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'dice_coefficitent.jpg'))
-    # plt.show()
-    # plt.close()
-
-    # plt.figure()
-    # plt.plot(iou_score_history, label='IOU score')
-    # plt.xlabel('Epoch')
-    # plt.ylabel('Score')
-    # plt.legend()
-    # plt.savefig(os.path.join(PLOT_DIRECTORY,args.exp_id,'iou_score.jpg'))
-    # plt.show()
-    # plt.close()
     print("Training completed.")
 
 train_model(model=model, 
