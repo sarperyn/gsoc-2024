@@ -111,16 +111,21 @@ def visualize_predictions(images, masks, outputs, save_path, epoch, batch_idx):
 
     images = images.cpu().numpy()
     masks = masks.cpu().numpy()
-    outputs = torch.sigmoid(outputs).cpu().numpy() 
-    
+    outputs = torch.sigmoid(outputs).cpu().numpy()
 
-    images = images[:4]
-    masks = masks[:4]
-    outputs = outputs[:4]
+    bs = images.shape[0] 
 
-    fig, axs = plt.subplots(3, 4, figsize=(12, 9))
+    # indices = [15,29]
+    # images = images[indices,:,:,:]
+    # masks = masks[indices,:,:,:]
+    # outputs = outputs[indices,:,:,:]
+    images = images[:bs]
+    masks = masks[:bs]
+    outputs = outputs[:bs]
+
+    fig, axs = plt.subplots(3, bs, figsize=(12, 9))
     
-    for i in range(4):
+    for i in range(bs):
         axs[0, i].imshow(images[i][0], cmap='gray')
         axs[0, i].axis('off')
         axs[1, i].imshow(masks[i][0], cmap='gray')  
@@ -131,3 +136,15 @@ def visualize_predictions(images, masks, outputs, save_path, epoch, batch_idx):
     plt.suptitle(f'Batch {batch_idx} Predictions')
     plt.savefig(os.path.join(save_path,f'fig_{epoch}_{batch_idx}.jpg'),format='jpg',bbox_inches='tight', pad_inches=0, dpi=100)
     plt.show()
+
+
+def plot_metric(x, label, plot_dir, args, metric):
+    plt.figure()
+    plt.plot(x, label=label)
+    #plt.plot(val_loss_history, label='Val Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel(label)
+    plt.legend()
+    plt.savefig(os.path.join(plot_dir,args.exp_id,f'{metric}_curves.jpg'))
+    plt.show()
+    plt.close()
