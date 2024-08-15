@@ -6,25 +6,25 @@ import subprocess
 ########################################################################
 
 exp_h = [
-    "python train_unet.py --device cuda:1 --exp_id levi1/0 --bs 1 --epoch 1 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/1 --bs 1 --epoch 2 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/2 --bs 1 --epoch 3 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/3 --bs 1 --epoch 4 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/4 --bs 1 --epoch 5 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/5 --bs 1 --epoch 6 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/6 --bs 1 --epoch 7 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/7 --bs 1 --epoch 8 --test_size 0.50",
-    "python train_unet.py --device cuda:1 --exp_id levi1/8 --bs 1 --epoch 9 --test_size 0.50",
+    "python train_unet.py --device cuda:0 --exp_id test_size/1 --bs 4 --epoch 51 --test_size 0.10",
+    "python train_unet.py --device cuda:0 --exp_id test_size/2 --bs 4 --epoch 51 --test_size 0.20",
+    "python train_unet.py --device cuda:0 --exp_id test_size/3 --bs 4 --epoch 51 --test_size 0.30",
+    "python train_unet.py --device cuda:0 --exp_id test_size/4 --bs 4 --epoch 51 --test_size 0.40",
+    "python train_unet.py --device cuda:0 --exp_id test_size/5 --bs 4 --epoch 51 --test_size 0.50",
+    "python train_unet.py --device cuda:1 --exp_id test_size/6 --bs 4 --epoch 51 --test_size 0.60",
+    "python train_unet.py --device cuda:1 --exp_id test_size/7 --bs 4 --epoch 51 --test_size 0.70",
+    "python train_unet.py --device cuda:1 --exp_id test_size/8 --bs 4 --epoch 51 --test_size 0.80",
+    "python train_unet.py --device cuda:1 --exp_id test_size/9 --bs 4 --epoch 51 --test_size 0.90",
 
-    "python train_unet.py --device cuda:0 --exp_id levi2/0 --bs 1 --epoch 1 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/1 --bs 1 --epoch 2 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/2 --bs 1 --epoch 3 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/3 --bs 1 --epoch 4 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/4 --bs 1 --epoch 5 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/5 --bs 1 --epoch 6 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/6 --bs 1 --epoch 7 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/7 --bs 1 --epoch 8 --test_size 0.30",
-    "python train_unet.py --device cuda:0 --exp_id levi2/8 --bs 1 --epoch 9 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/0 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/1 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/2 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/3 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/4 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/5 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/6 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/7 --bs 1 --epoch 51 --test_size 0.30",
+    # "python train_unet.py --device cuda:0 --exp_id overfit/8 --bs 1 --epoch 51 --test_size 0.30",
 ]
 
 def main():
@@ -33,7 +33,7 @@ def main():
     python_commands = exp_h
 
     commands = {
-        f"new-{i+4}":bashcode + el for i,el in enumerate(python_commands)
+        f"exp-{i}":bashcode + el for i,el in enumerate(python_commands)
     }
     
     eval = 'eval "$(conda shell.bash hook)"'
