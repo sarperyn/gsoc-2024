@@ -1,7 +1,7 @@
 # utils/__init__.py
 
-from .dataloaders import MadisonDataset
+from .dataloaders import DatasetNoLabels, DatasetLabeled
 
 __all__ = [
-    'MadisonDataset'
+    'DatasetNoLabels', 'DatasetLabeled'
 ]

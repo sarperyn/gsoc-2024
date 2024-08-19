@@ -17,7 +17,7 @@ from ..utils.variable_utils import MADISON_DATA
 from ..utils.data_utils import read_image, resize_torch_tensor
 
 
-class MadisonDataset(Dataset):
+class DatasetNoLabels(Dataset):
 
     def __init__(self, image_paths) -> None:
         
@@ -42,12 +42,13 @@ class MadisonDataset(Dataset):
 
         return img
         
-class MadisonDatasetLabeled(Dataset):
+class DatasetLabeled(Dataset):
 
-    def __init__(self, segmentation_path, augment=False) -> None:
+    def __init__(self, segmentation_path, args, augment=False) -> None:
         self.image_paths = sorted(glob.glob(os.path.join(segmentation_path, '*image*.png')))
-        self.mask_paths = sorted(glob.glob(os.path.join(segmentation_path, '*mask*.png')))
-        
+        self.mask_paths  = sorted(glob.glob(os.path.join(segmentation_path, '*mask*.png')))
+        self.args        = args
+
         self.transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Resize((256, 256)),
@@ -66,6 +67,35 @@ class MadisonDatasetLabeled(Dataset):
                 transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
             ])
 
+    def get_cases(self, n_cases=10):
+
+        case_set = set()
+        for img in self.image_paths:
+            case_num = img.split('/')[-1].split('_')[0]
+            case_set.add(case_num)
+
+        val_cases = list(case_set)[:n_cases]
+        return val_cases
+
+    def split_data(self, val_cases):
+
+        training   = []
+        validation = []
+
+        for i in range(len(self.image_paths)):
+
+            case_num = self.image_paths[i].split('/')[-1].split('_')[0]
+
+            if case_num in val_cases:
+                validation.append(self.image_paths[i])
+                validation.append(self.mask_paths[i])
+            
+            else:
+                training.append(self.image_paths[i])
+                training.append(self.mask_paths[i])
+
+        return training, validation
+    
     def __len__(self) -> int:
         return len(self.image_paths)
 
@@ -97,7 +127,7 @@ if __name__ == '__main__':
     # data = next(iter(dataloader))
     # print(data.shape)
 
-    dataset    = MadisonDatasetLabeled(segmentation_path='/home/syurtseven/gsoc-2024/data/stomach_masks',augment=False)
+    dataset    = DatasetLabeled(segmentation_path='/home/syurtseven/gsoc-2024/data/stomach_masks',augment=False)
     dataloader = DataLoader(dataset=dataset, batch_size=5)
     data = next(iter(dataloader))
 

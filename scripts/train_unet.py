@@ -14,7 +14,7 @@ import torch.optim as optim
 from sklearn.model_selection import train_test_split
 
 
-from src.dataloader.dataloaders import MadisonDatasetLabeled
+from src.dataloader.dataloaders import DatasetLabeled
 from src.models.unet import BaseUNet
 from src.utils.viz_utils import visualize_predictions, plot_metric
 from src.utils.args_utils import train_arg_parser
@@ -25,7 +25,7 @@ from src.evaluation.segmentation_metrics import dice_coefficient
 args = train_arg_parser()
 
 device = args.device
-dataset = MadisonDatasetLabeled(SEGMENTATION_DATA, augment=True)
+dataset = DatasetLabeled(SEGMENTATION_DATA, args=args, augment=True)
 #val_dataset   = MadisonDatasetLabeled(VALIDATION_DIR, augment=False)
 
 train_indices, val_indices = train_test_split(np.arange(len(dataset)), test_size=args.test_size, random_state=42)
