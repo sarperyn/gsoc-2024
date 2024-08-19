@@ -1,77 +1,52 @@
-import numpy as np
-import torch
-import glob
 import os
-from tqdm import tqdm
-import sys
-sys.path.append(os.path.dirname(os.getcwd()))
-
-from torch.utils.data import DataLoader
-import torch.optim as optim
-
-from src.dataloader.dataloaders import MadisonDataset
-from src.models.ddpm import DiffusionModel, UNet
-from src.utils.viz_utils import visualize_samples
-from src.utils.args_utils import arg_parser
-from src.utils.variable_utils import MADISON_DATA, PLOT_DIRECTORY
+import subprocess
+import argparse
 
 
-args = arg_parser()
-#init_wandb(args)
+def train_arg_parser():
 
-image_paths = glob.glob(os.path.join(MADISON_DATA, '*'))
-print(f"#IMAGES:{len(image_paths)}")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str, help="Path to dataset yaml file")
+    parser.add_argument("--exp", type=str, default="exp", help="Path for saving running related data.")
+    parser.add_argument("--doc", type=str, required=True, help="A string for documentation purpose. Will be the name of the log folder.")
+    parser.add_argument("--sample", action="store_true", help="Whether to produce samples from the model")
+    parser.add_argument("--timesteps", type=int, default=1000, help="number of steps involved")
+    parser.add_argument("--eta", type=float, default=0.0, help="eta used to control the variances of sigma")
+    parser.add_argument("--fid", action="store_true")
+    parser.add_argument("--ni", action="store_true", help="No interaction. Suitable for Slurm Job launcher")
+    args = parser.parse_args()
+    return args
 
-dataset    = MadisonDataset(image_paths=image_paths)
-dataloader = DataLoader(dataset=dataset, batch_size=args.bs)
-device = args.device
+args = train_arg_parser()
+train_command = [
+    f"python ../external/ddim/main.py --config {args.config} --exp {args.exp} --ni"
+    ]
+
+sample_command = [
+    f"python ../external/ddim/main.py --config {args.path_yml} --exp {args.exp} --sample --fid --timesteps {args.step} --eta {args.eta} --ni"
+]
+
+def main():
+    bashcode = ''
+    python_command = sample_command if args.sample else train_command
+
+    command = {
+        f"exp":bashcode + python_command
+        }
 
 
-unet = UNet(in_channels=1, out_channels=1).to(device)
-model = DiffusionModel(unet, args).to(device)
-model = model.to(device)
+    eval = 'eval "$(conda shell.bash hook)"'
 
-optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    for k, v in command.items():
+        code1 = f"tmux+new-session+-d+-s+{k}"
+        code2 = f"tmux+send-keys+-t+{k}+{eval}+Enter"
+        code3 = f"tmux+send-keys+-t+{k}+conda activate gsoc+Enter"
+        code4 = f"tmux+send-keys+-t+{k}+{v}+Enter"
 
-def normalize(x):
-    return 2 * x - 1
-
-def denormalize(x):
-    return (x + 1) / 2
+        for i in [code1, code2, code3, code4]:
+            res = subprocess.run(i.split('+'))
+            print(res)
 
 
-def train_model(model, train_loader, device, args):
-
-    os.makedirs(os.path.join(PLOT_DIRECTORY,args.exp_id),exist_ok=True)
-    os.makedirs(os.path.join(PLOT_DIRECTORY,args.exp_id,'model'),exist_ok=True)
-
-    model.train()
-    for epoch in range(args.epoch):
-        train_loss = 0
-        for batch_idx, x in enumerate(tqdm(train_loader, desc=f"Epoch {epoch + 1}/{args.epoch}")):
-
-            x = x.to(device)
-            x = normalize(x)
-            #visualize_samples(tensor=x, save_path=os.path.join(PLOT_DIRECTORY,args.exp_id), epoch=epoch, batch=batch_idx)
-            #print(torch.min(x), torch.max(x))
-            t = torch.randint(0, model.num_timesteps, (x.size(0),), device=device).long()
-            optimizer.zero_grad()
-            loss = model.loss_function(x, t)
-            loss.backward()
-            optimizer.step()
-
-            if batch_idx % 30 == 0:
-               print(f'Epoch {epoch}, Batch {batch_idx}, Loss: {loss.item() / len(x)}')
-
-            if batch_idx % 100 == 0:
-                sample_shape = (5, 1, 256, 256) 
-                generated_samples = model.sample(sample_shape, device)
-                print(generated_samples)
-                torch.save(model, os.path.join(PLOT_DIRECTORY,args.exp_id,'model',f'model_{args.exp_id.split('/')[-1]}.pt'))
-                visualize_samples(tensor=generated_samples, save_path=os.path.join(PLOT_DIRECTORY,args.exp_id), epoch=epoch, batch=batch_idx)
-
-        print(f'Epoch: {epoch} Average loss: {train_loss / len(train_loader.dataset)}')
-
-    print("Training completed.")
-
-train_model(model=model, train_loader=dataloader, device=device, args=args)
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,6 @@
+[submodule "ddim"]
+	path = ddim
+	url = https://github.com/ermongroup/ddim.git
+[submodule "external/ddim"]
+	path = external/ddim
+	url = https://github.com/ermongroup/ddim.git

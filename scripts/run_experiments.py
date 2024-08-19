@@ -10,11 +10,11 @@ exp_h = [
     "python train_unet.py --device cuda:0 --exp_id test_size/2 --bs 4 --epoch 51 --test_size 0.20",
     "python train_unet.py --device cuda:0 --exp_id test_size/3 --bs 4 --epoch 51 --test_size 0.30",
     "python train_unet.py --device cuda:0 --exp_id test_size/4 --bs 4 --epoch 51 --test_size 0.40",
-    "python train_unet.py --device cuda:0 --exp_id test_size/5 --bs 4 --epoch 51 --test_size 0.50",
+    "python train_unet.py --device cuda:1 --exp_id test_size/5 --bs 4 --epoch 51 --test_size 0.50",
     "python train_unet.py --device cuda:1 --exp_id test_size/6 --bs 4 --epoch 51 --test_size 0.60",
     "python train_unet.py --device cuda:1 --exp_id test_size/7 --bs 4 --epoch 51 --test_size 0.70",
     "python train_unet.py --device cuda:1 --exp_id test_size/8 --bs 4 --epoch 51 --test_size 0.80",
-    "python train_unet.py --device cuda:1 --exp_id test_size/9 --bs 4 --epoch 51 --test_size 0.90",
+    #"python train_unet.py --device cuda:1 --exp_id test_size/9 --bs 4 --epoch 51 --test_size 0.90",
 
     # "python train_unet.py --device cuda:0 --exp_id overfit/0 --bs 1 --epoch 51 --test_size 0.30",
     # "python train_unet.py --device cuda:0 --exp_id overfit/1 --bs 1 --epoch 51 --test_size 0.30",
