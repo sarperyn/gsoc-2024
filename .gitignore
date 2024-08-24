@@ -6,5 +6,10 @@
 *.csv
 *.pt
 *.txt
+*.gif
 data
 scripts/results/*
+models/*
+notebooks/contrast*
+notebooks/test*
+external/*
