@@ -100,7 +100,7 @@ class DatasetLabeled(Dataset):
         return len(self.image_paths)
 
     def __getitem__(self, index) -> Any:
-        img = cv2.imread(self.image_paths[index], cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(self.image_paths[index], cv2.IMREAD_UNCHANGED)
         mask = cv2.imread(self.mask_paths[index], cv2.IMREAD_UNCHANGED)
         
         # Apply the transformations
