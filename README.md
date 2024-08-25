@@ -53,6 +53,4 @@ Install these modules and place them in the 'external' (which you created) folde
 ## Usage
 
 ## Demo Video
-
-<video controls src="gsoc_fdemo_compressed.mp4" title="Watch the demo"></video>
-
+[![Watch the demo](https://github.com/sarperyn/gsoc-2024/blob/main/cover.png)](https://github.com/sarperyn/gsoc-2024/blob/main/gsoc_fdemo_compressed.mp4)
