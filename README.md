@@ -1,8 +1,10 @@
 # A graphical user interface of ML Toolbox for Medical Images (gsoc2024)
 
-Contributor: Sarper Yurtseven
-Organization: Department of Biomedical Informatics, Emory University
-Mentors: Ozgur Kara, Babak Mahmoudi
+This github repo has been developed under GSoC 2024
+
+Contributor: Sarper Yurtseven <br>
+Organization: Department of Biomedical Informatics, Emory University <br>
+Mentors: Ozgur Kara, Babak Mahmoudi <br>
 
 Accurate and efficient image segmentation is crucial for various medical applications, particularly when real-time processing is required. Traditional methods often face challenges in maintaining computational efficiency, leading to delays that are not acceptable in time-sensitive scenarios. This project introduces an initial version of a user-friendly Graphical User Interface (GUI) built upon the ML Methods Toolbox, specifically designed to address these challenges in medical image segmentation.
 
@@ -54,7 +56,16 @@ This project relies on several external modules that must be installed:
 
 Install these modules and place them in the 'external' (which you created) folder.
 
+## Model Checkpoints
+
+You can download the models that is used in the repo from this link
+
 ## Usage
+Place the models to correct places and run:
+
+```
+python gradio_demo.py
+```
 
 ## Demo Video
 ![Watch the demo](https://github.com/sarperyn/gsoc-2024/blob/main/gifs/demo1.gif)
