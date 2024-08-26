@@ -1,9 +1,9 @@
-[submodule "ddim"]
-	path = ddim
-	url = https://github.com/ermongroup/ddim.git
 [submodule "external/ddim"]
 	path = external/ddim
 	url = https://github.com/ermongroup/ddim.git
-[submodule "scripts/external/MedSAM"]
+[submodule "external/MedSAM"]
 	path = scripts/external/MedSAM
 	url = https://github.com/bowang-lab/MedSAM.git
+[submodule "external/singan-seg"]
+	path = external/singan-seg
+	url = https://github.com/vlbthambawita/singan-seg.git
