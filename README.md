@@ -1,5 +1,9 @@
 # A graphical user interface of ML Toolbox for Medical Images (gsoc2024)
 
+Contributor: Sarper Yurtseven
+Organization: Department of Biomedical Informatics, Emory University
+Mentors: Ozgur Kara, Babak Mahmoudi
+
 Accurate and efficient image segmentation is crucial for various medical applications, particularly when real-time processing is required. Traditional methods often face challenges in maintaining computational efficiency, leading to delays that are not acceptable in time-sensitive scenarios. This project introduces an initial version of a user-friendly Graphical User Interface (GUI) built upon the ML Methods Toolbox, specifically designed to address these challenges in medical image segmentation.
 
 This version serves as a functional demo, it lays the foundation for future upgrades that will introduce more advanced features and capabilities. The GUI currently offers three main functionalities:
