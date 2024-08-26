@@ -53,4 +53,6 @@ Install these modules and place them in the 'external' (which you created) folde
 ## Usage
 
 ## Demo Video
-[![Watch the demo](https://github.com/sarperyn/gsoc-2024/blob/main/cover.png)](https://github.com/sarperyn/gsoc-2024/blob/main/low_quality_demo_vid.mp4)
+![Watch the demo](https://github.com/sarperyn/gsoc-2024/blob/main/demo1.gif)
+
+![Data generation results](https://github.com/sarperyn/gsoc-2024/blob/main/demo2.gif)
