@@ -6,7 +6,6 @@
 *.csv
 *.pt
 *.txt
-*.gif
 data
 scripts/results/*
 models/*
