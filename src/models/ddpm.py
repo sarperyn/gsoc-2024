@@ -116,10 +116,10 @@ class DiffusionModel(nn.Module):
         return xt_minus_1, predicted_noise, noise
     
     def loss_function(self, x0, t):
-
-        loss = F.mse_loss()
-
-        return 
+        """Compute training loss for a given input and timestep."""
+        _, predicted_noise, noise = self.forward(x0, t)
+        loss = F.mse_loss(predicted_noise, noise)
+        return loss
 
     def sample(self, shape, device):
 
