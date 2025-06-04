@@ -35,7 +35,7 @@ conda create -n new_env python==3.12.2
 conda activate new_env
 ```
 
-Check your your pip is the correct pip
+Check that your pip is the correct pip
 
 ```
 which pip
