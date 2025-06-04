@@ -26,7 +26,8 @@ args = train_arg_parser()
 
 device = args.device
 dataset = DatasetLabeled(SEGMENTATION_DATA, args=args, augment=True)
-#val_dataset   = MadisonDatasetLabeled(VALIDATION_DIR, augment=False)
+# Example of creating a separate validation dataset
+# val_dataset = DatasetLabeled(VALIDATION_DIR, args=args, augment=False)
 
 train_indices, val_indices = train_test_split(np.arange(len(dataset)), test_size=args.test_size, random_state=42)
 train_dataset = Subset(dataset, train_indices)
